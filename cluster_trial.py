@@ -1,7 +1,5 @@
 from segment_anything import SamAutomaticMaskGenerator, sam_model_registry
-import numpy as np
 import torch
-import matplotlib.pyplot as plt
 import cv2
 import argparse
 import os
@@ -33,7 +31,7 @@ if __name__ == "__main__":
     for i,camera in enumerate(labels_dict):
         camera_dict = labels_dict[camera]
         for j,imageNr in enumerate(camera_dict):
-            print("Camera: " + str(i) + "/" + str(len(labels_dict)) + " | Image: " + str(j) + "/" + str(len(camera_dict)))
+            print("Camera: " + str(i) + "/" + str(len(labels_dict)) + " | Image: " + str(j) + "/" + str(len(camera_dict)), flush=True)
             img_dict = camera_dict[imageNr]['img']
             img_path = images_dir + "/" + img_dict['file_name']
             processed_path = labels_dir + "/" + str.replace(img_dict['file_name'], "." + img_type, ".txt")

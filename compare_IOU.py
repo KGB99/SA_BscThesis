@@ -20,57 +20,21 @@ if __name__ == '__main__':
     output_dir = args.output_dir
     labels_file = args.labels_file
     
-
-
-    # read test ground truth annotations
-    f = open(test_annotations_path, 'r')
-    test_annotations_dict = json.load(f)
-    f.close()
-    
-    bbox_dict = {}
-    f = open(bbox_preds_path, 'r')
-    line_list = ast.literal_eval(f.readline())
-    for line_dict in line_list:
-        curr_id = line_dict['image_id']
-        curr_cat = line_dict['category_id']
-        bbox_dict[curr_id] = {}
-        bbox_dict[curr_id][curr_cat] = {}
-        bbox_dict[curr_id][curr_cat]['bbox'] = line_dict['bbox']
-        bbox_dict[curr_id][curr_cat]['score'] = line_dict['score']
+    f = open(labels_file, "r")
+    gt_dict = json.dump(f)
     f.close()
 
-    
-    mask_dict = {}
-    f = open(mask_preds_path, 'r')
-    line_list = ast.literal_eval(f.readline())
-    for line_dict in line_list:
-        curr_id = line_dict['image_id']
-        curr_cat = line_dict['category_id']
-        mask_dict[curr_id] = {}
-        mask_dict[curr_id][curr_cat] = {}
-        mask_dict[curr_id][curr_cat]['segmentation' ] = line_dict['segmentation']
-        mask_dict[curr_id][curr_cat]['score'] = line_dict['score']
-    f.close()
-    
-    # create mapping for img_id -> img_path
-    img_mappings = {}
-    path_prepend = images_dir_path + '/'
-    for img_dict in test_annotations_dict['images']:
-        img_mappings[img_dict['id']] = path_prepend + img_dict['file_name']
+    for i,camera in enumerate(gt_dict):
+        camera_dict = gt_dict[camera]
+        for j,imageNr in enumerate(camera_dict):
+            print("Camera: " + str(i) + "/" + str(len(gt_dict)) + " | Image: " + str(j) + "/" + str(len(camera_dict)), flush=True)
 
-    #print(len(test_annotations_dict['annotations']))
-    bboxes_found = 0
-    bbox_avg_accuracy = 0
-    iou_bbox_total = 0
-    seg_found = 0
-    iou_seg_total = 0
-    total_dets = len(test_annotations_dict['annotations'])
 
-    # prepare video sequence
-    height, width, channels = (1080, 1280, 3)
-    if VIDEO:
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
-        out = cv2.VideoWriter(video_path, fourcc, 20.0, (width, height))
+   
+
+
+
+    
 
     for i,gt_dict in enumerate(test_annotations_dict['annotations']):
         # load image
