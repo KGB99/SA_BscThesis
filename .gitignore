@@ -4,3 +4,4 @@ segment-anything
 myenv
 slurm_*
 SA_images
+models
