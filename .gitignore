@@ -2,6 +2,6 @@ sam_vit_h_4b8939.pth
 .DS_store
 segment-anything
 myenv
-slurm_*
+slurm*
 SA_images
 models
