@@ -4,6 +4,7 @@ import cv2
 import argparse
 import os
 import json
+import pickle
 
 def prep_path(results_path, img_path):
     temp_img_path = img_path
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument("--images_dir", required=False, type=str)
     parser.add_argument("--img_type", required=False, default="png", type=str)
     parser.add_argument("--model", help="vit_h or vit_l" ,required=False, default="vit_h", type=str)
-    parser.add_argument("--single_file_res", help="bool for saving all masks to single file, similar to labels_file", required=False, default=True, type=bool)
+    parser.add_argument("--single_file_res", help="bool for saving all masks to single file, similar to labels_file", required=False, default=False, type=bool)
     parser.add_argument("--output", required=False, help="name of output file, should end with .json", default="output_sa_masks.json", type=str)
     args = parser.parse_args()
     labels_file = args.labels_file
@@ -49,8 +50,15 @@ if __name__ == "__main__":
     f = open(labels_file, "r")
     labels_dict = json.load(f)
     f.close()
-
+    #chosen_cameras = ['001004', '016004']
+    #chosen_cameras = ['016004']
+    #chosen_cameras = ["001000", "001001", "001002", "001003", "001004", "001005", "001006", "016000", "016001", "016002", "016003", "016004", "016005", "016006"]
+    #chosen_cameras = ["001000", "001001", "001002", "001003", "001005", "001006"]
+    chosen_cameras = ["001000", "001001"]
     for i,camera in enumerate(labels_dict):
+        if not (camera in chosen_cameras):
+            continue
+
         camera_dict = labels_dict[camera]
         for j,imageNr in enumerate(camera_dict):
             print("Camera: " + str(i) + "/" + str(len(labels_dict)) + " | Image: " + str(j) + "/" + str(len(camera_dict)), flush=True)
@@ -65,18 +73,17 @@ if __name__ == "__main__":
 
             masks_dict = {}
             #all masks mode
-            masks_path = labels_dir + "/" + str.replace(img_dict['file_name'], "." + img_type, ".txt")
+            # im using pickle files cause of the deep nested numpy ndarrays created from segment anything in the object dicts
+            masks_path = labels_dir + "/" + str.replace(img_dict['file_name'], "." + img_type, ".pkl")
             all_masks = mask_generator.generate(image)
             masks_dict['all_masks'] = all_masks
-            
             #TODO: take samples from yolact
-            
 
             #multimask mode
             #multi_masks = 
             if not single_file:
-                f = open(masks_path, "w")
-                json.dump(f, masks_dict)
-                f.close()
+                with open(masks_path, "wb") as f:
+                    pickle.dump(masks_dict, f)
+                #np.savetext(masks_path, all_masks, )
 
     print("OK!")
