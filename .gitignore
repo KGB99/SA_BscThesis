@@ -5,3 +5,5 @@ myenv
 slurm*
 SA_images
 models
+.ipynb_checkpoints/
+__pycache__/
